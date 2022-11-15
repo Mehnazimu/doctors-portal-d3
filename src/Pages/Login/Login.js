@@ -6,7 +6,8 @@ import { AuthContext } from '../../context/AuthProvider';
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const { signIn, googleSignIn } = useContext(AuthContext);
+    const { signIn, googleSignIn, resetPassword } = useContext(AuthContext);
+    const [userEmail, setUserEmail] = useState('');
     const [loginError, setLoginError] = useState('');
     const location = useLocation();
     const navigate = useNavigate();
@@ -39,6 +40,16 @@ const Login = () => {
             .catch(err => console.error(err))
     }
 
+    const handleReset = () => {
+        resetPassword(userEmail)
+            .then(() => {
+                toast.success('Reset link has been sent,please check your email')
+            })
+            .catch(error => toast.error(error.message))
+
+    }
+
+
 
     return (
         <div className='h-[800px] flex justify-center items-center'>
@@ -49,7 +60,9 @@ const Login = () => {
 
                     <div className="form-control w-full max-w-xs ">
                         <label className="label"><span className="label-text">Email</span></label>
-                        <input type='text'
+                        <input
+                            onBlur={(event) => setUserEmail(event.target.value)}
+                            type='email'
                             {...register("email", {
                                 required: 'email address is required'
                             })}
@@ -65,7 +78,7 @@ const Login = () => {
                             })}
                             className='input input-bordered w-full max-w-xs' />
                         {errors.password && <p className='text-red-600'>{errors.password?.message}</p>}
-                        <label className="label"><span className="label-text">Forget Password?</span></label>
+                        <label className="label"><button onClick={handleReset} className="label-text">Forget Password?</button></label>
                     </div>
 
                     <input className='btn btn-accent w-full my-5' value='Login' type="submit" />
